@@ -7,6 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body,
 html {
   box-sizing: border-box;
@@ -42,12 +46,31 @@ canvas {
   right: 2em;
 }
 
+#info-panel {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  z-index: 100;
+  max-width: 300px;
+}
+
+#info-panel svg {
+  width: 25px;
+  height: 25px;
+  display: block;
+}
+
 #thickness-settings {
   position: fixed;
   top: 6em;
   right: 2em;
   z-index: 100;
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 200px;
 }
 
 .thickness {
@@ -55,7 +78,16 @@ canvas {
   width: 10px;
   height: 10px;
   background-color: black;
-  margin: 2em 0;
+  border: 1px solid black;
+}
+
+.thickness.selected {
+  border: 1px solid red;
+}
+
+.thickness-tiny {
+  width: 5px;
+  height: 5px;
 }
 
 .thickness-medium {
@@ -66,4 +98,42 @@ canvas {
 .thickness-large {
   width: 40px;
   height: 40px;
+}
+
+#details {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2em;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 999;
+}
+
+#details-inner {
+  height: 100%;
+  width: 60%;
+  background-color: white;
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#details-inner input {
+  font-size: 2em;
+  padding: 0.25em;
+  margin-bottom: 2em;
+  width: 100%;
+}
+
+#final-save-button {
+  width: 100%;
+  font-size: 2em;
+  padding: 0.25em;
+  align-self: flex-end;
 }
