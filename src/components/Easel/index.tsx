@@ -213,6 +213,7 @@ const Easel: React.FC = () => {
               />
 
               <h3>What is your name?</h3>
+              <h6>(this is how you will be credited in the Are.na book)</h6>
               <input
                 type="text"
                 placeholder="Your name"
