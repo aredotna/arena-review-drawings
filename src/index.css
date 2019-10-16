@@ -7,7 +7,63 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body,
+html {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+#canvas-container,
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: lightgray;
+  width: 100vw;
+  height: 100vh;
+}
+
+#save-button {
+  position: fixed;
+  top: 2em;
+  right: 2em;
+}
+
+#clear-button {
+  position: fixed;
+  top: 4em;
+  right: 2em;
+}
+
+#thickness-settings {
+  position: fixed;
+  top: 6em;
+  right: 2em;
+  z-index: 100;
+  text-align: right;
+}
+
+.thickness {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background-color: black;
+  margin: 2em 0;
+}
+
+.thickness-medium {
+  width: 25px;
+  height: 25px;
+}
+
+.thickness-large {
+  width: 40px;
+  height: 40px;
 }
