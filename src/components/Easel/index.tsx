@@ -2,73 +2,10 @@ import React, { useRef, useState } from 'react';
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 
+import { ReactComponent as Logo } from 'assets/arena-icon.svg';
+
+import draw from './draw';
 import { uploadFile } from 'lib/uploader';
-
-const draw = (
-  ctx: CanvasRenderingContext2D,
-  location: { x: number; y: number },
-  last: { x: number; y: number },
-  setLastCoords: (x: number, y: number) => void,
-  thickness: number
-) => {
-  ctx.fillStyle = 'black';
-
-  var x1 = location.x;
-  var x2 = last.x;
-  var y1 = location.y;
-  var y2 = last.y;
-  var x: number, y: number;
-
-  var steep = Math.abs(y2 - y1) > Math.abs(x2 - x1);
-
-  if (steep) {
-    x = x1;
-    x1 = y1;
-    y1 = x;
-    y = y2;
-    y2 = x2;
-    x2 = y;
-  }
-  if (x1 > x2) {
-    x = x1;
-    x1 = x2;
-    x2 = x;
-    y = y1;
-    y1 = y2;
-    y2 = y;
-  }
-  var dx = x2 - x1,
-    dy = Math.abs(y2 - y1),
-    error = 0,
-    de = dy / dx,
-    yStep = -1;
-  y = y1;
-  if (y1 < y2) {
-    yStep = 1;
-  }
-
-  var lineThickness =
-    thickness -
-    Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / (thickness / 2);
-
-  if (lineThickness < 1) {
-    lineThickness = 1;
-  }
-  for (var x3 = x1; x3 < x2; x3++) {
-    if (steep) {
-      ctx.fillRect(y, x3, lineThickness, lineThickness);
-    } else {
-      ctx.fillRect(x3, y, lineThickness, lineThickness);
-    }
-    error += de;
-    if (error >= 0.5) {
-      y += yStep;
-      error -= 1.0;
-    }
-  }
-
-  setLastCoords(location.x, location.y);
-};
 
 const GET_POLICY = gql`
   {
@@ -102,7 +39,12 @@ const Easel: React.FC = () => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
   const mouseDown = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [painting, setPainting] = useState(false);
+  const [mode, setMode] = useState<'resting' | 'details' | 'saving' | 'saved'>(
+    'resting'
+  );
   const [thickness, setThickness] = useState<number>(10);
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   const setLastCoords = (x: number, y: number) => {
     mouseDown.current = { x, y };
@@ -138,6 +80,8 @@ const Easel: React.FC = () => {
       return false;
     }
 
+    setMode('saving');
+
     canvasRef.current.toBlob(blob => {
       if (!blob) {
         return null;
@@ -151,8 +95,12 @@ const Easel: React.FC = () => {
               input: {
                 value: url,
                 channel_ids: [process.env.REACT_APP_CHANNEL_SLUG],
+                title,
+                description: `_Submitted by ${description}_`,
               },
             },
+          }).then(() => {
+            setMode('saved');
           });
         },
       });
@@ -191,26 +139,95 @@ const Easel: React.FC = () => {
           }
         }}
       />
-      <button id="save-button" onClick={uploadAndSave}>
-        Save
+      <button
+        id="save-button"
+        onClick={() => setMode('details')}
+        disabled={mode != 'resting'}
+      >
+        {
+          {
+            resting: 'Save',
+            details: 'Save',
+            saving: 'Saving...',
+            saved: 'Saved!',
+          }[mode]
+        }
       </button>
       <button id="clear-button" onClick={clearCanvas}>
         Clear
       </button>
+      <div id="info-panel">
+        <Logo />
+        <div>
+          <h6>garden-for-the-book.are.na</h6>
+
+          <h6>
+            We (Are.na) are making a physical book and we'd like to grow a
+            (figurative) community garden inside. Draw your favorite plant and
+            we will add it to the book.
+          </h6>
+
+          <h6>
+            See all submissions{' '}
+            <a href="https://www.are.na/share/OyLDWOI" target="_blank">
+              here
+            </a>
+            .
+          </h6>
+        </div>
+      </div>
       <div id="thickness-settings">
         <div
-          className="thickness thickness-small"
+          className={`thickness thickness-tiny ${thickness === 5 &&
+            `selected`}`}
+          onClick={() => setThickness(5)}
+        />
+        <div
+          className={`thickness thickness-small ${thickness === 10 &&
+            `selected`}`}
           onClick={() => setThickness(10)}
         />
         <div
-          className="thickness thickness-medium"
+          className={`thickness thickness-medium ${thickness === 25 &&
+            `selected`}`}
           onClick={() => setThickness(25)}
         />
         <div
-          className="thickness thickness-large"
+          className={`thickness thickness-large ${thickness === 40 &&
+            `selected`}`}
           onClick={() => setThickness(40)}
         />
       </div>
+
+      {mode === 'details' && (
+        <div id="details">
+          <div id="details-inner">
+            <div>
+              <h3>What is the name of your plant?</h3>
+              <input
+                type="text"
+                placeholder="Name of plant"
+                onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                  setTitle(e.currentTarget.value)
+                }
+              />
+
+              <h3>What is your name?</h3>
+              <input
+                type="text"
+                placeholder="Your name"
+                onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                  setDescription(e.currentTarget.value)
+                }
+              />
+            </div>
+
+            <button id="final-save-button" onClick={uploadAndSave}>
+              Save plant
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
