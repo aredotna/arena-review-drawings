@@ -43,7 +43,7 @@ const draw = (
 
   var lineThickness =
     thickness -
-    Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / (thickness / 2);
+    Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / thickness;
 
   if (lineThickness < 1) {
     lineThickness = 1;
