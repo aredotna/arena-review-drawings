@@ -16,7 +16,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const { X_AUTH_TOKEN, X_APP_TOKEN, CHANNEL_ID } = process.env;
 
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
