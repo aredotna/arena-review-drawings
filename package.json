@@ -8,6 +8,7 @@
     "are.na": "^0.1.1",
     "axios": "^0.19.0",
     "axios-hooks": "^1.4.0",
+    "body-parser": "^1.19.0",
     "express-pino-logger": "^4.0.0",
     "graphql": "^14.5.8",
     "morgan": "^1.9.1",
@@ -26,10 +27,8 @@
     "extends": "react-app"
   },
   "devDependencies": {
-    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "express": "^4.17.1",
     "prettier": "1.18.2"
   }
 }
