@@ -34,6 +34,12 @@ canvas {
   height: 100vh;
 }
 
+#canvas-container.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 #save-button {
   position: fixed;
   top: 2em;

@@ -50,8 +50,8 @@ const Easel: React.FC = () => {
 
   if (loading || error) {
     return (
-      <div id="canvas-container">
-        <h1>Loading</h1>
+      <div id="canvas-container" className="loading">
+        <h5>Loading...</h5>
       </div>
     );
   }

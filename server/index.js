@@ -3,6 +3,7 @@ const axios = require('axios');
 const { print } = require('graphql');
 const path = require('path');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 
 const GET_POLICY = require('./queries/policy');
 const CREATE_BLOCK = require('./mutations/createBlock');
@@ -18,6 +19,7 @@ const { X_AUTH_TOKEN, X_APP_TOKEN, CHANNEL_ID } = process.env;
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(morgan('combined'));
 
 app.get('/api/policy', (req, res) => {
   axios({
