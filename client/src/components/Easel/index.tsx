@@ -1,39 +1,10 @@
-import React, { useRef, useState } from 'react';
-import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import React, { useRef, useState, useEffect } from 'react';
+import useAxios from 'axios-hooks';
 
 import { ReactComponent as Logo } from 'assets/arena-icon.svg';
 
 import draw from './draw';
 import { uploadFile } from 'lib/uploader';
-
-const GET_POLICY = gql`
-  {
-    me {
-      policy {
-        key
-        AWSAccessKeyId
-        acl
-        success_action_status
-        policy
-        signature
-        bucket
-      }
-    }
-  }
-`;
-
-const ADD_BLOCK = gql`
-  mutation CreateBlock($input: CreateBlockInput!) {
-    create_block(input: $input) {
-      blokk {
-        ... on Model {
-          id
-        }
-      }
-    }
-  }
-`;
 
 const Easel: React.FC = () => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
@@ -58,8 +29,24 @@ const Easel: React.FC = () => {
     canvasRef.current.width = canvasRef.current.width;
   };
 
-  const [addBlock] = useMutation(ADD_BLOCK);
-  const { data, loading, error } = useQuery(GET_POLICY);
+  const [{ data: postData }, addBlock] = useAxios(
+    {
+      url: '/api/create',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    { manual: true }
+  );
+
+  useEffect(() => {
+    if (postData) {
+      setMode('saved');
+    }
+  }, [postData]);
+
+  const [{ data: policy, loading, error }] = useAxios('/api/policy');
 
   if (loading || error) {
     return (
@@ -68,10 +55,6 @@ const Easel: React.FC = () => {
       </div>
     );
   }
-
-  const {
-    me: { policy },
-  } = data;
 
   const uploadAndSave = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -91,16 +74,11 @@ const Easel: React.FC = () => {
         policy,
         onDone: url => {
           addBlock({
-            variables: {
-              input: {
-                value: url,
-                channel_ids: [process.env.REACT_APP_CHANNEL_SLUG],
-                title,
-                description: `_Submitted by ${description}_`,
-              },
+            data: {
+              url,
+              title,
+              description: `_Submitted by ${description}_`,
             },
-          }).then(() => {
-            setMode('saved');
           });
         },
       });
@@ -142,7 +120,7 @@ const Easel: React.FC = () => {
       <button
         id="save-button"
         onClick={() => setMode('details')}
-        disabled={mode != 'resting'}
+        disabled={mode !== 'resting'}
       >
         {
           {
@@ -169,7 +147,11 @@ const Easel: React.FC = () => {
 
           <h6>
             See all submissions{' '}
-            <a href="https://www.are.na/share/OyLDWOI" target="_blank">
+            <a
+              href="https://www.are.na/share/OyLDWOI"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               here
             </a>
             .
