@@ -12,6 +12,7 @@
     "express": "^4.17.1",
     "express-pino-logger": "^4.0.0",
     "graphql": "^14.5.8",
+    "heroku-ssl-redirect": "^0.0.4",
     "morgan": "^1.9.1",
     "node-env-run": "^3.0.2",
     "nodemon": "^1.19.4",

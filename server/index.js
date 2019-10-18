@@ -1,4 +1,5 @@
 const express = require('express');
+const sslRedirect = require('heroku-ssl-redirect');
 const axios = require('axios');
 const { print } = require('graphql');
 const path = require('path');
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
+app.use(sslRedirect());
 
 app.get('/api/policy', (req, res) => {
   axios({
@@ -66,15 +68,8 @@ app.post('/api/create', (req, res) => {
     });
 });
 
-app.get('*', (req, res, next) => {
-  if (
-    req.headers['x-forwarded-proto'] !== 'https' &&
-    process.env.NODE_ENV === 'production'
-  ) {
-    res.redirect('https://' + req.hostname + req.url);
-  } else {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'));
-  }
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
 const port = process.env.PORT || 5000;
