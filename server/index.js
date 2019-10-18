@@ -5,14 +5,21 @@ const { print } = require('graphql');
 const path = require('path');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const GET_POLICY = require('./queries/policy');
 const CREATE_BLOCK = require('./mutations/createBlock');
 
 const app = express();
 
+const corsOptions = {
+  origin: 'https://garden-for-the-book.are.na',
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
+  app.use(cors(corsOptions));
 }
 
 const { X_AUTH_TOKEN, X_APP_TOKEN, CHANNEL_ID } = process.env;
