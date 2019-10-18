@@ -68,15 +68,13 @@ app.post('/api/create', (req, res) => {
 
 app.get('*', (req, res, next) => {
   if (
-    req.headers['x-forwarded-proto'] != 'https' &&
+    req.headers['x-forwarded-proto'] !== 'https' &&
     process.env.NODE_ENV === 'production'
-  )
+  ) {
     res.redirect('https://' + req.hostname + req.url);
-  else next();
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'));
+  } else {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'));
+  }
 });
 
 const port = process.env.PORT || 5000;
