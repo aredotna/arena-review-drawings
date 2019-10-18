@@ -91,12 +91,39 @@ const Easel: React.FC = () => {
         ref={canvasRef}
         width={window.innerWidth}
         height={window.innerHeight}
+        onTouchEnd={e => {
+          setPainting(false);
+        }}
         onMouseUp={e => {
           setPainting(false);
+        }}
+        onTouchStart={e => {
+          setPainting(true);
+          const touch = e.touches[0];
+          mouseDown.current = { x: touch.clientX, y: touch.clientY };
         }}
         onMouseDown={e => {
           setPainting(true);
           mouseDown.current = { x: e.clientX, y: e.clientY };
+        }}
+        onTouchMove={e => {
+          if (painting) {
+            const canvas = canvasRef.current;
+            const ctx = canvas && canvas.getContext('2d');
+            const touch = e.touches[0];
+
+            if (!ctx) {
+              return null;
+            }
+
+            draw(
+              ctx,
+              { x: touch.clientX, y: touch.clientY },
+              mouseDown.current,
+              setLastCoords,
+              thickness
+            );
+          }
         }}
         onMouseMove={e => {
           if (painting) {
@@ -205,9 +232,14 @@ const Easel: React.FC = () => {
               />
             </div>
 
-            <button id="final-save-button" onClick={uploadAndSave}>
-              Save plant
-            </button>
+            <div className="save-or-cancel">
+              <button id="final-save-button" onClick={uploadAndSave}>
+                Save plant
+              </button>
+              <a href="#" onClick={() => setMode('resting')}>
+                Cancel
+              </a>
+            </div>
           </div>
         </div>
       )}
