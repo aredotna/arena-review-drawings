@@ -8,6 +8,7 @@ import { uploadFile } from 'lib/uploader';
 
 const Easel: React.FC = () => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
+  const [blob, setBlob] = useState<null | Blob>(null);
   const mouseDown = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [painting, setPainting] = useState(false);
   const [mode, setMode] = useState<'resting' | 'details' | 'saving' | 'saved'>(
@@ -46,6 +47,19 @@ const Easel: React.FC = () => {
     }
   }, [postData]);
 
+  useEffect(() => {
+    if (mode === 'details' && canvasRef.current) {
+      console.log('saving blob');
+      canvasRef.current.toBlob(b => {
+        console.log('to blob', b);
+        if (!b) {
+          return null;
+        }
+        setBlob(b);
+      });
+    }
+  }, [mode]);
+
   const [{ data: policy, loading, error }] = useAxios('/api/policy');
 
   if (loading || error) {
@@ -59,29 +73,25 @@ const Easel: React.FC = () => {
   const uploadAndSave = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    if (!policy || !canvasRef.current) {
+    if (!policy || !blob) {
+      console.log('blob', blob);
       return false;
     }
 
     setMode('saving');
 
-    canvasRef.current.toBlob(blob => {
-      if (!blob) {
-        return null;
-      }
-      uploadFile({
-        blob,
-        policy,
-        onDone: url => {
-          addBlock({
-            data: {
-              url,
-              title,
-              description: `_Submitted by ${description}_`,
-            },
-          });
-        },
-      });
+    uploadFile({
+      blob,
+      policy,
+      onDone: url => {
+        addBlock({
+          data: {
+            url,
+            title,
+            description: `_Submitted by ${description}_`,
+          },
+        });
+      },
     });
   };
 
