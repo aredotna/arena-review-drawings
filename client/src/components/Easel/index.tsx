@@ -49,9 +49,7 @@ const Easel: React.FC = () => {
 
   useEffect(() => {
     if (mode === 'details' && canvasRef.current) {
-      console.log('saving blob');
       canvasRef.current.toBlob(b => {
-        console.log('to blob', b);
         if (!b) {
           return null;
         }
@@ -74,7 +72,6 @@ const Easel: React.FC = () => {
     e.preventDefault();
 
     if (!policy || !blob) {
-      console.log('blob', blob);
       return false;
     }
 
@@ -154,11 +151,7 @@ const Easel: React.FC = () => {
           }
         }}
       />
-      <button
-        id="save-button"
-        onClick={() => setMode('details')}
-        disabled={mode !== 'resting'}
-      >
+      <button id="save-button" onClick={() => setMode('details')} disabled>
         {
           {
             resting: 'Save',
@@ -180,6 +173,11 @@ const Easel: React.FC = () => {
             We (Are.na) are making a physical book and we'd like to grow a
             (figurative) community garden inside. Draw your favorite plant and
             we will add it to the book.
+          </h6>
+
+          <h6>
+            EDIT (11/15/2019): Thank you! We've recieved over 300 beautiful
+            plants for the garden. We can't wait to show you the final result.
           </h6>
 
           <h6>
